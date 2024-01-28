@@ -27,7 +27,7 @@ bytesToHumanIEC() {
         while ((b > 1024)); do
             d="$(printf ".%02d" $((b % 1024 * 100 / 1024)))"
             b=$((b / 1024))
-            let s++
+            (( s++ ))
         done
         echo "$b$d${S[$s]}"
     fi
@@ -62,7 +62,7 @@ done
 
 # checks
 [[ ${EUID} -ne 0 ]] && {
-  printf "Must be run as root. Try 'sudo $( basename "$0" )'\n"
+  echo "Must be run as root. Try 'sudo $( basename "$0" )'"
   exit 1
 }
 
@@ -122,8 +122,8 @@ readarray -t TOT_ < <( awk '{ print $2 }' <<< "$OUT" )
 readarray -t EXC_ < <( awk '{ print $3 }' <<< "$OUT" )
 
 for (( i = 0 ; i < ${#ID__[@]} ; i++ )); do
-  TOT[${ID__[$i]}]=$( bytesToHumanIEC ${TOT_[$i]} )
-  EXC[${ID__[$i]}]=$( bytesToHumanIEC ${EXC_[$i]} )
+  TOT[${ID__[$i]}]=$( bytesToHumanIEC "${TOT_[$i]}" )
+  EXC[${ID__[$i]}]=$( bytesToHumanIEC "${EXC_[$i]}" )
   EXC_NUM[${ID__[$i]}]=${EXC_[$i]}
 done
 
@@ -141,22 +141,22 @@ EXCL_TOTAL=0
 [[ "$QFLAG" == "1" ]] && btrfs quota disable "$LOCATION"
 
 formatMask="%-60s %10s %10s  %-10s\n"
-separatorLine="─────────────────────────────────────────────────────────────────────────────────────────\n"
+separatorLine="─────────────────────────────────────────────────────────────────────────────────────────"
 
 # output
 printf "$formatMask" "Subvolume" "Total" "Exclusive" "ID"
-printf "$separatorLine"
+echo "$separatorLine"
 
 ## matching by IDs in btrfs subvolume list
 for (( i = 0 ; i < ${#ID__[@]} ; i++ )); do
-  printf "$formatMask" "${NAME[${ID__[$i]}]}" "${TOT[${ID__[$i]}]}" "${EXC[${ID__[$i]}]}" ${ID__[$i]}
-  EXC_TMP=EXC_NUM[${ID__[$i]}]
+  printf "$formatMask" "${NAME[${ID__[$i]}]}" "${TOT[${ID__[$i]}]}" "${EXC[${ID__[$i]}]}" "${ID__[$i]}"
+  EXC_TMP=${EXC_NUM[${ID__[$i]}]}
   EXCL_TOTAL=$(( EXCL_TOTAL + EXC_TMP ))
 done
 
 EXCL_TOTAL=$( bytesToHumanIEC "$EXCL_TOTAL" )
 
-printf "$separatorLine"
+echo "$separatorLine"
 printf "%s %66s\n" "Total exclusive data" "$EXCL_TOTAL"
 
 # License
