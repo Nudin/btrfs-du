@@ -33,6 +33,15 @@ bytesToHumanIEC() {
     fi
 }
 
+# Truncate string to 60 chars max, add ellipse if truncated
+trunc_string() {
+  if [[ "${#1}" -gt 60 ]]; then
+    echo "${1:0:59}…"
+  else
+    echo "$1"
+  fi
+}
+
 BTRFS_OPT=""
 RAW_NUMBERS=""
 
@@ -133,7 +142,7 @@ readarray -t ID__ < <( awk -F "\t" '{ print $1 }' <<< "$OUT" )
 readarray -t NAM_ < <( awk -F "\t" '{ print $5 }' <<< "$OUT" )
 
 for (( i = 0 ; i < ${#ID__[@]} ; i++ )); do
-  NAME[${ID__[$i]}]=${NAM_[$i]}
+  NAME[${ID__[$i]}]=$(trunc_string "${NAM_[$i]}")
 done
 
 EXCL_TOTAL=0
