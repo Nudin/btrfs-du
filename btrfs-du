@@ -157,7 +157,7 @@ done
 EXCL_TOTAL=$( bytesToHumanIEC "$EXCL_TOTAL" )
 
 echo "$separatorLine"
-printf "%s %66s\n" "Total exclusive data" "$EXCL_TOTAL"
+printf "%s %61s\n" "Total exclusive data" "$EXCL_TOTAL"
 
 # License
 #
